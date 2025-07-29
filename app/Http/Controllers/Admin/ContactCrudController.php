@@ -40,26 +40,22 @@ class ContactCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('id')->label('ID');
-        CRUD::column('first_name')->label('First Name');
-        CRUD::column('last_name')->label('Last Name');
-        CRUD::column('email')->label('Email');
-        CRUD::column('phone')->label('Phone');
-        CRUD::column('company')->label('Company');
-        CRUD::column('created_at')->label('Created')->type('datetime');
-
-        // Add search functionality
-        CRUD::addFilter([
-            'type' => 'text',
-            'name' => 'search',
-            'label' => 'Search'
-        ], false, function ($value) {
-            CRUD::addClause('where', function ($query) use ($value) {
-                $query->where('first_name', 'like', '%' . $value . '%')
-                      ->orWhere('last_name', 'like', '%' . $value . '%')
-                      ->orWhere('email', 'like', '%' . $value . '%')
-                      ->orWhere('company', 'like', '%' . $value . '%');
-            });
+        CRUD::column('first_name')->label('First Name')->searchLogic(function ($query, $column, $searchTerm) {
+            $query->orWhere('first_name', 'like', '%' . $searchTerm . '%');
         });
+        CRUD::column('last_name')->label('Last Name')->searchLogic(function ($query, $column, $searchTerm) {
+            $query->orWhere('last_name', 'like', '%' . $searchTerm . '%');
+        });
+        CRUD::column('email')->label('Email')->searchLogic(function ($query, $column, $searchTerm) {
+            $query->orWhere('email', 'like', '%' . $searchTerm . '%');
+        });
+        CRUD::column('phone')->label('Phone')->searchLogic(function ($query, $column, $searchTerm) {
+            $query->orWhere('phone', 'like', '%' . $searchTerm . '%');
+        });
+        CRUD::column('company')->label('Company')->searchLogic(function ($query, $column, $searchTerm) {
+            $query->orWhere('company', 'like', '%' . $searchTerm . '%');
+        });
+        CRUD::column('created_at')->label('Created')->type('datetime');
     }
 
     /**
